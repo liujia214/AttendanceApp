@@ -1,0 +1,8 @@
+<section>
+    <a ui-sref="profile">Profile</a>
+    <h1>Hello from Landing Page</h1>
+    <div ng-hide="user">Please wait while I check you in ...</div>
+    <div ng-show="user">
+        <p>Hello {{user.displayName}}, what can I assist you with?</p>
+    </div>
+</section>

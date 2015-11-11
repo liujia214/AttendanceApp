@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="contactApp">
+<head>
+    <meta charset="UTF-8">
+    <title>Contacts</title>
+    <link rel="stylesheet" href="./stylesheets/base.css"/>
+    <script src="bower_components/angular/angular.js"></script>
+    <script src="bower_components/angular-ui-router/release/angular-ui-router.js"></script>
+    <script src="app/app.js"></script>
+</head>
+<body>
+    <header ng-controller="mainCtrl">
+        <h1>{{message}}</h1>
+    </header>
+
+    <div ui-view></div>
+</body>
+</html>
