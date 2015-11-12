@@ -1,0 +1,16 @@
+<md-content layout="row" layout-wrap>
+    <!--<a ui-sref="profile">Profile</a>-->
+    <!--<h1>Hello from Landing Page</h1>-->
+    <!--<div ng-hide="user">Please wait while I check you in ...</div>-->
+    <!--<div ng-show="user">-->
+        <!--<p>Hello {{user.displayName}}, what can I assist you with?</p>-->
+        <!--<a href="/logout">Log out</a>-->
+    <!--</div>-->
+    <header flex="100" class="md-display-1 md-margin" style="text-align: center">Hello {{user.name.first}}</header>
+    <md-button ng-if="!user" ng-href="{{googleUrl}}" class="md-raised md-primary" flex="">Login with Google</md-button>
+    <md-button ng-show="user" class="md-primary md-raised" ui-sref="landing.profile" flex="">Profile</md-button>
+    <md-button ng-if="user.type === 'admin'" class="md-accent md-raised" flex="" ui-sref="landing.admin">Admin</md-button>
+</md-content>
+<md-content>
+    <div ui-view></div>
+</md-content>

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="contactApp">
+<head>
+    <meta charset="UTF-8">
+    <title>Contacts</title>
+    <link rel="stylesheet" href="bower_components/angular-material/angular-material.min.css">
+    <style>
+        body{
+            font-family:  'Avenir Next', 'Segoe UI', 'Droid Sans', 'Helvetica';
+            padding: 6em;
+            margin: 0;
+        }
+        #content{
+            margin: auto;
+            max-width: 40%;
+            max-height: 400px;
+            border-radius: 3px;
+        }
+        .md-button{
+            margin:0 !important;
+        }
+
+    </style>
+    <script src="bower_components/angular/angular.js"></script>
+    <script src="bower_components/angular-ui-router/release/angular-ui-router.js"></script>
+    <script src="bower_components/angular-animate/angular-animate.min.js"></script>
+    <script src="bower_components/angular-aria/angular-aria.min.js"></script>
+    <script src="bower_components/angular-material/angular-material.min.js"></script>
+    <script src="app/app.js"></script>
+</head>
+<body>
+
+
+    <div ui-view id="content"></div>
+
+
+</body>
+</html>
