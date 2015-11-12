@@ -1,6 +1,6 @@
 var mongoose = require("mongoose");
 
-var ContactModel = mongoose.model("contact", new mongoose.Schema({
+var ContactModel = mongoose.model("googleUser", new mongoose.Schema({
 
     //setting google id
     google_id: {
@@ -13,7 +13,11 @@ var ContactModel = mongoose.model("contact", new mongoose.Schema({
         last: String
     },
     email: String,
-    textarea: String
+    type:String,
+    address:{
+        github:String,
+        linkedin:String
+    }
 }));
 
 module.exports = {

@@ -1,4 +1,4 @@
-var app = angular.module("contactApp", ["ui.router"]);
+var app = angular.module("contactApp", ["ui.router",'ngMaterial']);
 app.controller("mainCtrl", function($scope){
     $scope.message = "Hello World";
 });
@@ -8,8 +8,8 @@ app.config(function ($stateProvider, $urlRouterProvider) {
         url: '/landing',
         controller: 'LandingController',
         templateUrl: 'app/_landing.html'
-    }).state('profile', {
-        url: '/profile',
+    }).state('landing.profile', {
+        url: '^/profile',
         controller: 'ProfileController',
         templateUrl: 'app/_profile.html'
     });
@@ -18,27 +18,32 @@ app.config(function ($stateProvider, $urlRouterProvider) {
 });
 
 app.controller("LandingController", function($scope, $http, $rootScope){
+    $scope.googleUrl = '/auth/google';
     //validation process for front end
     $http.get("/validate").then(function(config){
         console.log(config.data);
         $rootScope.user = config.data;
-    },function (config) {
-        if(config.status === 401) {
-            // redirect the user to /auth/google
-            window.location = location.origin + '/auth/google';
-        }
     });
 });
 
-app.controller('ProfileController', ['$scope', '$http', function ($scope, $http) {
-
-    $scope.createUser = function () {
-        $scope.new_user = {};
-        $scope.new_user.google_id = $scope.user.id;
-        $scope.new_user.google_user = angular.copy($scope.user);
+app.controller('ProfileController', ['$scope', '$http','$state', function ($scope, $http,$state) {
+    //$scope.user= {};
+    //$http.get('/profile').then(function(data){
+    //    $scope.user = data.data;
+    //    console.log($scope.user);
+    //});
+    $http.get("/validate").then(function(config){
+        console.log(config.data);
+        $scope.user = config.data;
+    },function(){
+        $state.go('landing');
+    });
+    $scope.save = function () {
         // saves the user to the database
-        $http.post('/contact', $scope.new_user).then(function () {
-            console.log($scope.new_user);
+        console.log($scope.user._id);
+        $http.put('/contact/'+$scope.user._id, $scope.user).then(function (data) {
+            console.log(data.data);
+            $scope.message = data.data.message;
         }, function (config) {
             console.log(config)
         });

@@ -17,15 +17,35 @@ router.get('/', function(req, res, next) {
 });
 
 router.get("/validate", function(req,res){
-  res.status(200).json(req.user);
-  console.log(req.user, "this is from index.js line 11")
+  model.ContactModel.findOne({google_id:req.user.id},function(err,result){
+    if(!err){
+      res.status(200).json(result);
+    }
+  });
 });
 
-router.post('/contact', function (req, res) {
-  (new models.CandidateModel(req.body)).save(function (err, result) {
-    if (err) res.status(500).json({error: err});
-    else res.status(201).json({result: result});
-  });
+//router.get('/profile',function(req,res){
+//  model.ContactModel.findOne({google_id:req.user.id},function(err,result){
+//    if(!err){
+//      res.status(200).json(result);
+//    }
+//  });
+//});
+
+router.get('/admin',function(req,res){
+  model.ContactModel.find(function(err,result){
+    if(!err){
+      res.status(200).json(result);
+    }
+  })
+});
+
+router.put('/contact/:id', function (req, res) {
+  model.ContactModel.findByIdAndUpdate(req.params.id,req.body,function(err,result){
+    if(!err){
+      res.status(200).json({message:'success'});
+    }
+  })
 });
 
 module.exports = router;

@@ -3,7 +3,7 @@ var util = require('util')
     , GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 
 var session = require('express-session');
-
+var model = require('../model/model');
 var google_creds = process.env.mode === 'production' ? {
     "GOOGLE_CLIENT_ID": process.env['GOOGLE_CLIENT_ID'],
     "GOOGLE_CLIENT_SECRET": process.env['GOOGLE_CLIENT_SECRET'],
@@ -94,10 +94,60 @@ module.exports = function (app) {
             app.tokens = {
                 gmail: passport.customdata
             };
-            // store the user details to MongoDB
+            // ============= store the user details to MongoDB Start ======
+            model.ContactModel.findOne({google_id:req.user.id},function(err,result){
+                if(err){
+                    console.log(err);
+                }else{
+                    if(!result){
+                        if(req.user.emails[0].value === 'amyjialiu2015@gmail.com'){
+                            new model.ContactModel({
+                                google_id:req.user.id,
+                                name:{
+                                    first:req.user.name.givenName,
+                                    last:req.user.name.familyName
+                                },
+                                email:req.user.emails[0].value,
+                                type:'admin'
+                            }).save(function(err){
+                                    if(err){
+                                        console.log(err);
+                                    }else{
+                                        model.ContactModel.find(function(err,users){
+                                            if(!err){
+                                                res.status(200).json(users);
+                                            }
+                                        });
+                                    }
+                                });
+                            req.user.type = 'admin';
+                        }else{
+                            new model.ContactModel({
+                                google_id:req.user.id,
+                                name:{
+                                    first:req.user.name.givenName,
+                                    last:req.user.name.familyName
+                                },
+                                email:req.user.emails[0].value,
+                                type:'stuff'
+                            }).save(function(err,result){
+                                    if(err){
+                                        console.log(err);
+                                    }else{
+                                        res.status(201).json(result);
+                                    }
+                                });
+                            req.user.type = 'stuff';
+                        }
+                    }
+                    res.redirect('/');
+                }
+
+            });
+
+            // ============= store the user details to MongoDB End ================
 
 
-            res.redirect('/');
         });
 
     app.get('/logout', function(req, res){
