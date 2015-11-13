@@ -32,11 +32,6 @@ app.controller("LandingController", function($scope, $http, $rootScope){
 
 
 app.controller('ProfileController',function ($scope, $http,$state, $rootScope) {
-    //$scope.user= {};
-    //$http.get('/profile').then(function(data){
-    //    $scope.user = data.data;
-    //    console.log($scope.user);
-    //});
     $http.get("/validate").then(function(config){
         console.log(config.data);
         $scope.user = config.data;
@@ -68,15 +63,17 @@ app.controller('AdminController', function($http,$scope,$state, $rootScope){
         $state.go('landing');
     });
 
-    $scope.userlist;
-    $scope.date = new Date();
-
-    $scope.pickdate = function(date){
-        $scope.date = date;
+    $scope.date = '';
+    $scope.maxDate = new Date();
+    $scope.pickdate = function(){
+        $scope.message = '';
         $http.get("/contacts").then(function(data){
             $scope.userlist = data.data;
-            var date = encodeURIComponent($scope.date);
+            var date = encodeURIComponent($scope.date.toDateString());
+            console.log(date);
+
             $http.get('/attendance/'+date).then(function(data_attendance) {
+                console.log(data_attendance.data);
                 if (data_attendance.data.length != 0 ) {
                     console.log("right now change the front end",data_attendance.data );
                     $scope.userlist.forEach(function(ele_contact){
@@ -97,28 +94,22 @@ app.controller('AdminController', function($http,$scope,$state, $rootScope){
                 console.log("change over", $scope.userlist);
             });
         });
-
-
-    },function(){
-        $state.go('landing');
     };
-
 
     $scope.save = function(userlist){
         $scope.attendance=[];
         userlist.forEach(function(ele){
             $scope.attendance.push(ele);
-        })
+        });
         $scope.attendance.forEach(function(ele){
-            ele.date = $scope.date;
+            ele.date = $scope.date.toDateString();
             ele.timestamp = new Date();
-        })
+        });
         console.log($scope.attendance);
-        var date = encodeURIComponent($scope.date);
-        $http.put('/attendance/', $scope.attendance).then(function(){
-
+        $http.put('/attendance/', $scope.attendance).then(function(result){
+            $scope.message = result.data.message;
         })
-    }
+    };
 
     $scope.seecontact= function(contact){
         console.log(contact.google_id);
@@ -129,5 +120,5 @@ app.controller('AdminController', function($http,$scope,$state, $rootScope){
         })
 
     }
-})
+});
 

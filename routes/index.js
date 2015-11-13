@@ -16,6 +16,7 @@ router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' });
 });
 
+// validate user before any behavior
 router.get("/validate", function(req,res){
   model.ContactModel.findOne({google_id:req.user.id},function(err,result){
     if(!err){
@@ -24,15 +25,7 @@ router.get("/validate", function(req,res){
   });
 });
 
-//router.get('/profile',function(req,res){
-//  model.ContactModel.findOne({google_id:req.user.id},function(err,result){
-//    if(!err){
-//      res.status(200).json(result);
-//    }
-//  });
-//});
-
-
+// get all users information
 router.get('/contacts',function(req,res){
   model.ContactModel.find(function(err,result){
     if(!err){
@@ -50,12 +43,13 @@ router.get('/contacts/:id',function(req,res){
   })
 });
 
+// update user's profile
 router.put('/contact/:id', function (req, res) {
   model.ContactModel.findByIdAndUpdate(req.params.id,req.body,function(err,result){
     if(!err){
       res.status(200).json({message:'success'});
     }
-  })
+  });
 });
 
 
@@ -80,11 +74,17 @@ router.put('/attendance',function(req,res){
           console.log("updating=================");
           model.AttendanceModel.update({google_id:ele.google_id,date:ele.date},{attendance:ele.attendance},function(err,update_result){
             console.log(update_result);
+            if(!err){
+              res.status(200).json({message:'success'});
+            }
           });
         }else{
           //console.log({google_id:ele.google_id,date:ele.date,attendance:ele.attendance, timestamp:ele.timestamp});
           model.AttendanceModel.create({google_id:ele.google_id,date:ele.date,attendance:ele.attendance, timestamp:ele.timestamp},function(err,save_result){
             console.log(save_result);
+            if(!err){
+              res.status(201).json({message:'success'});
+            }
           });
         }
       }else{
@@ -93,6 +93,5 @@ router.put('/attendance',function(req,res){
       }
     })
   });
-  //res.status(200).json({message:"updaing successfully"});
 });
 module.exports = router;

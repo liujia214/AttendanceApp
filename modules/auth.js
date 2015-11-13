@@ -135,6 +135,8 @@ module.exports = function (app) {
                                 });
 
                         }
+                    }else{
+                        res.redirect('/');
                     }
 
                 }

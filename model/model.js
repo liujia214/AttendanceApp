@@ -26,9 +26,9 @@ var AttendanceModel = mongoose.model("attendance", new mongoose.Schema({
     google_id: {
         type: String
     },
-    date:{ type: Date },
+    date:{ type: String },
     attendance:{ type: Boolean, default: false },
-    timestamp:{ type: Date, default: Date.now },
+    timestamp:{ type: Date, default: Date.now }
 }));
 
 module.exports = {
