@@ -18,7 +18,6 @@ passport.deserializeUser(function(obj, done) {
     done(null, obj);
     // testing
 });
-
 passport.use(new GoogleStrategy({
         clientID: google_creds.GOOGLE_CLIENT_ID,
         clientSecret: google_creds.GOOGLE_CLIENT_SECRET,
@@ -113,14 +112,9 @@ module.exports = function (app) {
                                     if(err){
                                         console.log(err);
                                     }else{
-                                        model.ContactModel.find(function(err,users){
-                                            if(!err){
-                                                res.status(200).json(users);
-                                            }
-                                        });
+                                        res.redirect('/');
                                     }
                                 });
-                            req.user.type = 'admin';
                         }else{
                             new model.ContactModel({
                                 google_id:req.user.id,
@@ -134,20 +128,14 @@ module.exports = function (app) {
                                     if(err){
                                         console.log(err);
                                     }else{
-                                        res.status(201).json(result);
+                                        res.redirect('/');
                                     }
                                 });
-                            req.user.type = 'stuff';
                         }
                     }
-                    res.redirect('/');
                 }
-
             });
-
             // ============= store the user details to MongoDB End ================
-
-
         });
 
     app.get('/logout', function(req, res){
