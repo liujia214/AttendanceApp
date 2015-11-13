@@ -12,6 +12,10 @@ app.config(function ($stateProvider, $urlRouterProvider) {
         url: '^/profile',
         controller: 'ProfileController',
         templateUrl: 'app/_profile.html'
+    }).state('landing.admin',{
+        url: '^/admin',
+        controller: 'AdminController',
+        templateUrl: 'app/_admin.html'
     });
 
     $urlRouterProvider.otherwise('/landing');
@@ -26,7 +30,8 @@ app.controller("LandingController", function($scope, $http, $rootScope){
     });
 });
 
-app.controller('ProfileController', ['$scope', '$http','$state', function ($scope, $http,$state) {
+
+app.controller('ProfileController',function ($scope, $http,$state, $rootScope) {
     //$scope.user= {};
     //$http.get('/profile').then(function(data){
     //    $scope.user = data.data;
@@ -37,6 +42,10 @@ app.controller('ProfileController', ['$scope', '$http','$state', function ($scop
         $scope.user = config.data;
     },function(){
         $state.go('landing');
+    });
+    $rootScope.$on('check_this_user', function(event, data){
+        console.log("hello",data);
+        $scope.user = data;
     });
     $scope.save = function () {
         // saves the user to the database
@@ -49,4 +58,76 @@ app.controller('ProfileController', ['$scope', '$http','$state', function ($scop
         });
     };
 
-}]);
+});
+
+app.controller('AdminController', function($http,$scope,$state, $rootScope){
+    $http.get("/validate").then(function(config){
+        console.log(config.data);
+        $scope.user = config.data;
+    },function(){
+        $state.go('landing');
+    });
+
+    $scope.userlist;
+    $scope.date = new Date();
+
+    $scope.pickdate = function(date){
+        $scope.date = date;
+        $http.get("/contacts").then(function(data){
+            $scope.userlist = data.data;
+            var date = encodeURIComponent($scope.date);
+            $http.get('/attendance/'+date).then(function(data_attendance) {
+                if (data_attendance.data.length != 0 ) {
+                    console.log("right now change the front end",data_attendance.data );
+                    $scope.userlist.forEach(function(ele_contact){
+                        ele_contact.attendance = false;
+                        data_attendance.data.forEach(function(ele_attendance){
+                            if (ele_attendance.google_id === ele_contact.google_id) {
+                                ele_contact.attendance = ele_attendance.attendance;
+                            }
+                        })
+                    })
+
+                } else {
+                    $scope.userlist.forEach(function (ele_contact) {
+                        ele_contact.attendance = false;
+                        console.log(ele_contact);
+                    })
+                }
+                console.log("change over", $scope.userlist);
+            });
+        });
+
+
+    },function(){
+        $state.go('landing');
+    };
+
+
+    $scope.save = function(userlist){
+        $scope.attendance=[];
+        userlist.forEach(function(ele){
+            $scope.attendance.push(ele);
+        })
+        $scope.attendance.forEach(function(ele){
+            ele.date = $scope.date;
+            ele.timestamp = new Date();
+        })
+        console.log($scope.attendance);
+        var date = encodeURIComponent($scope.date);
+        $http.put('/attendance/', $scope.attendance).then(function(){
+
+        })
+    }
+
+    $scope.seecontact= function(contact){
+        console.log(contact.google_id);
+        $http.get('contacts/'+contact.google_id).then(function(result){
+            console.log(result.data);
+            $state.go('landing.profile');
+            $rootScope.$emit('check_this_user', result.data);
+        })
+
+    }
+})
+

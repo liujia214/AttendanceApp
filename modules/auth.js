@@ -89,7 +89,6 @@ module.exports = function (app) {
     app.get('/auth/google/callback',
         passport.authenticate('google', { failureRedirect: '/login' }),
         function(req, res) {
-
             app.tokens = {
                 gmail: passport.customdata
             };
@@ -99,7 +98,7 @@ module.exports = function (app) {
                     console.log(err);
                 }else{
                     if(!result){
-                        if(req.user.emails[0].value === 'amyjialiu2015@gmail.com'){
+                        if(req.user.emails[0].value === 'jatholeny@gmail.com' || req.user.emails[0].value ==='amyjialiu2015@gmail.com'){
                             new model.ContactModel({
                                 google_id:req.user.id,
                                 name:{
@@ -107,6 +106,8 @@ module.exports = function (app) {
                                     last:req.user.name.familyName
                                 },
                                 email:req.user.emails[0].value,
+
+                                photo:req.user.photos[0].value,
                                 type:'admin'
                             }).save(function(err){
                                     if(err){
@@ -123,6 +124,7 @@ module.exports = function (app) {
                                     last:req.user.name.familyName
                                 },
                                 email:req.user.emails[0].value,
+                                photo:req.user.photos[0].value,
                                 type:'stuff'
                             }).save(function(err,result){
                                     if(err){
@@ -131,10 +133,14 @@ module.exports = function (app) {
                                         res.redirect('/');
                                     }
                                 });
+
                         }
                     }
+
                 }
+
             });
+
             // ============= store the user details to MongoDB End ================
         });
 

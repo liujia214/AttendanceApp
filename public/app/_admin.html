@@ -1,0 +1,17 @@
+<section style='padding: 20px;' class="datepickerdemoBasicUsage" ng-cloak>
+    <md-content>
+        <h4>Pick a Date</h4>
+        <md-datepicker ng-model = "date" ng-change="pickdate(date)" md-placeholder="Enter date"></md-datepicker>
+    </md-content>
+    <md-divider ></md-divider>
+    <md-list-item class="md-3-line"  ng-repeat="eachuser in userlist">
+        <img ng-src="{{eachuser.photo}}" class="md-avatar" alt="{{eachuser.email}}" />
+        <div class="md-list-item-text" layout="column" >
+            <h3>{{ eachuser.name.first }}</h3>
+            <h4>{{ eachuser.name.last }}</h4>
+        </div>
+        <md-checkbox ng-model="eachuser.attendance" aria-label="Checkbox 1"></md-checkbox>
+    </md-list-item>
+    <md-button class="md-raised md-primary" ng-click="save(userlist)">Save</md-button>
+    </md-content>
+</section>

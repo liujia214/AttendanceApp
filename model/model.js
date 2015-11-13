@@ -13,6 +13,7 @@ var ContactModel = mongoose.model("googleUser", new mongoose.Schema({
         last: String
     },
     email: String,
+    photo:String,
     type:String,
     address:{
         github:String,
@@ -20,6 +21,17 @@ var ContactModel = mongoose.model("googleUser", new mongoose.Schema({
     }
 }));
 
+var AttendanceModel = mongoose.model("attendance", new mongoose.Schema({
+    //setting google id
+    google_id: {
+        type: String
+    },
+    date:{ type: Date },
+    attendance:{ type: Boolean, default: false },
+    timestamp:{ type: Date, default: Date.now },
+}));
+
 module.exports = {
-    ContactModel: ContactModel
+    ContactModel: ContactModel,
+    AttendanceModel:AttendanceModel
 };
