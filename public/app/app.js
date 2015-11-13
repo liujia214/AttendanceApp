@@ -30,7 +30,7 @@ app.controller("LandingController", function($scope, $http, $rootScope){
     });
 });
 
-app.controller('ProfileController', ['$scope', '$http','$state', function ($scope, $http,$state) {
+app.controller('ProfileController',function ($scope, $http,$state, $rootScope) {
     //$scope.user= {};
     //$http.get('/profile').then(function(data){
     //    $scope.user = data.data;
@@ -41,6 +41,10 @@ app.controller('ProfileController', ['$scope', '$http','$state', function ($scop
         $scope.user = config.data;
     },function(){
         $state.go('landing');
+    });
+    $rootScope.$on('check_this_user', function(event, data){
+        console.log("hello",data);
+        $scope.user = data;
     });
     $scope.save = function () {
         // saves the user to the database
@@ -53,10 +57,19 @@ app.controller('ProfileController', ['$scope', '$http','$state', function ($scop
         });
     };
 
-}]);
+});
 
-app.controller('AdminController', function($http,$scope){
+app.controller('AdminController', function($http,$scope,$state, $rootScope){
+    $http.get("/validate").then(function(config){
+        console.log(config.data);
+        $scope.user = config.data;
+    },function(){
+        $state.go('landing');
+    });
+
     $scope.userlist;
+    $scope.date = new Date();
+
     $scope.pickdate = function(date){
         $scope.date = date;
         $http.get("/contacts").then(function(data){
@@ -104,6 +117,16 @@ app.controller('AdminController', function($http,$scope){
         $http.put('/attendance/', $scope.attendance).then(function(){
 
         })
+    }
+
+    $scope.seecontact= function(contact){
+        console.log(contact.google_id);
+        $http.get('contacts/'+contact.google_id).then(function(result){
+            console.log(result.data);
+            $state.go('landing.profile');
+            $rootScope.$emit('check_this_user', result.data);
+        })
+
     }
 })
 

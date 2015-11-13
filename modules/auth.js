@@ -90,7 +90,8 @@ module.exports = function (app) {
     app.get('/auth/google/callback',
         passport.authenticate('google', { failureRedirect: '/login' }),
         function(req, res) {
-
+            console.log("=========google user information here");
+            console.log(req.user);
             app.tokens = {
                 gmail: passport.customdata
             };
@@ -108,16 +109,13 @@ module.exports = function (app) {
                                     last:req.user.name.familyName
                                 },
                                 email:req.user.emails[0].value,
+                                photo:req.user.photos[0].value,
                                 type:'admin'
                             }).save(function(err){
                                     if(err){
                                         console.log(err);
                                     }else{
-                                        model.ContactModel.find(function(err,users){
-                                            if(!err){
-                                                res.status(200).json(users);
-                                            }
-                                        });
+                                        res.redirect('/');
                                     }
                                 });
                         }else{
@@ -128,29 +126,19 @@ module.exports = function (app) {
                                     last:req.user.name.familyName
                                 },
                                 email:req.user.emails[0].value,
+                                photo:req.user.photos[0].value,
                                 type:'stuff'
                             }).save(function(err,result){
                                     if(err){
                                         console.log(err);
                                     }else{
-                                        res.status(201).json(result);
+                                        res.redirect('/');
                                     }
                                 });
-                            //new model.AttendanceModel({
-                            //    google_id:req.user.id,
-                            //    date:'',
-                            //    attendance:'',
-                            //    timestamp:''
-                            //}).save(function(err,result){
-                            //        if(err){
-                            //            console.log(err);
-                            //        }else{
-                            //            res.status(201).json(result);
-                            //        }
-                            //    });
+
                         }
                     }
-                    res.redirect('/');
+
                 }
 
             });

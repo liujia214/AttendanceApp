@@ -13,6 +13,7 @@ var ContactModel = mongoose.model("googleUser", new mongoose.Schema({
         last: String
     },
     email: String,
+    photo:String,
     type:String,
     address:{
         github:String,

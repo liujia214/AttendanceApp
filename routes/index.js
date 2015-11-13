@@ -39,6 +39,14 @@ router.get('/contacts',function(req,res){
     }
   })
 });
+router.get('/contacts/:id',function(req,res){
+  console.log(req.params.id);
+  model.ContactModel.find({google_id:req.params.id},function(err,result){
+    if(!err){
+      res.status(200).json(result);
+    }
+  })
+});
 
 router.put('/contact/:id', function (req, res) {
   model.ContactModel.findByIdAndUpdate(req.params.id,req.body,function(err,result){
