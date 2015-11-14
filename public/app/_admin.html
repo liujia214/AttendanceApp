@@ -1,4 +1,4 @@
-<section class="datepickerdemoBasicUsage" ng-cloak>
+<section ng-cloak ng-show="user.type === 'admin'">
     <md-content layout-padding  style="border-left: 1px solid #cccccc;border-right: 1px solid #cccccc;">
         <md-datepicker ng-model = "date" ng-change="pickdate()" md-max-date="maxDate" md-placeholder="Enter date"></md-datepicker>
         <md-divider ></md-divider>

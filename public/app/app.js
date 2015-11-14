@@ -7,7 +7,7 @@ app.config(function ($stateProvider, $urlRouterProvider) {
     $stateProvider.state('landing', {
         url: '/landing',
         controller: 'LandingController',
-        templateUrl: 'app/_landing.html'
+        templateUrl: 'app/_landing.html',
     }).state('landing.profile', {
         url: '^/profile',
         controller: 'ProfileController',
@@ -16,6 +16,10 @@ app.config(function ($stateProvider, $urlRouterProvider) {
         url: '^/admin',
         controller: 'AdminController',
         templateUrl: 'app/_admin.html'
+    }).state('landing.attendance',{
+        url:'^/attendance',
+        controller:'AttendanceController',
+        templateUrl:'app/_attendance.html'
     });
 
     $urlRouterProvider.otherwise('/landing');
@@ -23,11 +27,13 @@ app.config(function ($stateProvider, $urlRouterProvider) {
 
 app.controller("LandingController", function($scope, $http, $rootScope){
     $scope.googleUrl = '/auth/google';
-    //validation process for front end
-    $http.get("/validate").then(function(config){
-        console.log(config.data);
-        $rootScope.user = config.data;
-    });
+    if(!$scope.user){
+        $http.get("/validate").then(function(config){
+            console.log(config.data);
+            $rootScope.user = config.data;
+        });
+    }
+
 });
 
 
@@ -38,10 +44,10 @@ app.controller('ProfileController',function ($scope, $http,$state, $rootScope) {
     },function(){
         $state.go('landing');
     });
-    $rootScope.$on('check_this_user', function(event, data){
-        console.log("hello",data);
-        $scope.user = data;
-    });
+    //$rootScope.$on('check_this_user', function(event, data){
+    //    console.log("hello",data);
+    //    $scope.user = data;
+    //});
     $scope.save = function () {
         // saves the user to the database
         console.log($scope.user._id);
@@ -62,17 +68,14 @@ app.controller('AdminController', function($http,$scope,$state, $rootScope){
     },function(){
         $state.go('landing');
     });
-
-    $scope.date = '';
+    $scope.date = new Date();
     $scope.maxDate = new Date();
     $scope.pickdate = function(){
-        $scope.message = '';
-        $http.get("/contacts").then(function(data){
-            $scope.userlist = data.data;
+            $scope.message = '';
+        console.log($scope.date);
             var date = encodeURIComponent($scope.date.toDateString());
-            console.log(date);
 
-            $http.get('/attendance/'+date).then(function(data_attendance) {
+            $http.get('/admin/'+date).then(function(data_attendance) {
                 console.log(data_attendance.data);
                 if (data_attendance.data.length != 0 ) {
                     console.log("right now change the front end",data_attendance.data );
@@ -92,9 +95,17 @@ app.controller('AdminController', function($http,$scope,$state, $rootScope){
                     })
                 }
                 console.log("change over", $scope.userlist);
+            },function(){
+                $scope.userlist.forEach(function (ele_contact) {
+                    ele_contact.attendance = false;
+                    console.log(ele_contact);
+                })
             });
-        });
     };
+    $http.get('/contacts').then(function(result){
+        $scope.userlist = result.data;
+        $scope.pickdate();
+    });
 
     $scope.save = function(userlist){
         $scope.attendance=[];
@@ -105,20 +116,38 @@ app.controller('AdminController', function($http,$scope,$state, $rootScope){
             ele.date = $scope.date.toDateString();
             ele.timestamp = new Date();
         });
-        console.log($scope.attendance);
         $http.put('/attendance/', $scope.attendance).then(function(result){
             $scope.message = result.data.message;
+        },function(){
+            $scope.message = 'connection error!';
         })
     };
 
-    $scope.seecontact= function(contact){
-        console.log(contact.google_id);
-        $http.get('contacts/'+contact.google_id).then(function(result){
-            console.log(result.data);
-            $state.go('landing.profile');
-            $rootScope.$emit('check_this_user', result.data);
-        })
+    //$scope.seecontact= function(contact){
+    //    console.log(contact.google_id);
+    //    $http.get('contacts/'+contact.google_id).then(function(result){
+    //        console.log(result.data);
+    //        $state.go('landing.profile');
+    //        $rootScope.$emit('check_this_user', result.data);
+    //    })
+    //}
+});
 
-    }
+app.controller('AttendanceController',function($scope,$http,$state){
+    $http.get("/validate").then(function(config){
+        console.log(config.data);
+        $scope.user = config.data;
+        console.log($scope.user._id);
+        $http.get('/attendance/'+$scope.user.google_id).then(function(result){
+            $scope.result = result.data;
+            $scope.result.forEach(function(ele){
+                ele.date = new Date(ele.date).toISOString().substr(0,10);
+                ele.attendance = (ele.attendance === true) ? 'Present' : 'Absent';
+            });
+        })
+    },function(){
+        $state.go('landing');
+    });
+
 });
 

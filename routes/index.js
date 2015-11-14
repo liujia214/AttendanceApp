@@ -21,6 +21,8 @@ router.get("/validate", function(req,res){
   model.ContactModel.findOne({google_id:req.user.id},function(err,result){
     if(!err){
       res.status(200).json(result);
+    }else{
+      res.status(401);
     }
   });
 });
@@ -34,14 +36,13 @@ router.get('/contacts',function(req,res){
   })
 });
 
-router.get('/contacts/:id',function(req,res){
-  console.log(req.params.id);
-  model.ContactModel.find({google_id:req.params.id},function(err,result){
-    if(!err){
-      res.status(200).json(result);
-    }
-  })
-});
+//router.get('/contacts/:id',function(req,res){
+//  model.ContactModel.find({google_id:req.params.id},function(err,result){
+//    if(!err){
+//      res.status(200).json(result);
+//    }
+//  })
+//});
 
 // update user's profile
 router.put('/contact/:id', function (req, res) {
@@ -53,45 +54,125 @@ router.put('/contact/:id', function (req, res) {
 });
 
 
-router.get('/attendance/:date',function(req,res){
+router.get('/admin/:date',function(req,res){
   var date = decodeURIComponent(req.params.date);
   console.log(date);
   model.AttendanceModel.find({date:date}, function(err,result){
     if(!err){
-      console.log(result);
+      //console.log(result);
       res.status(200).json(result);
     }
-  })
+  });
 });
+
+
+router.get('/attendance/:id',function(req,res){
+
+  model.AttendanceModel.find({google_id:req.params.id}).sort('-date').select('date attendance').exec(function(err,result){
+    if(!err){
+      //console.log(result);
+      res.status(200).json(result);
+    }else{
+      //console.log(err);
+    }
+  });
+});
+
+//router.put('/attendance',function(req,res) {
+//  console.log(req.body);
+//
+//  model.AttendanceModel.find({date: req.body[0].date}, function (err, result) {
+//    console.log("result", result);
+//    if (!err) {
+//      if (result.length != 0) {
+//        console.log("updating=================");
+//        req.body.forEach(function(ele){
+//          result.find({google_id:ele.google_id},function(err,result){
+//            if(!err){
+//              if(result.length != 0){
+//                model.AttendanceModel.update({
+//                  google_id: ele.google_id,
+//                  date: ele.date
+//                }, {attendance: ele.attendance}, function (err, update_result) {
+//                  if (!err) {
+//                  }
+//                });
+//              }else{
+//                model.AttendanceModel.create({
+//                  google_id: ele.google_id,
+//                  date: ele.date,
+//                  attendance: ele.attendance,
+//                  timestamp: ele.timestamp
+//                }, function (err, save_result) {
+//                  if (!err) {
+//
+//                  }
+//                });
+//              }
+//            }
+//          })
+//        });
+//        res.status(200).json({message:'success'});
+//
+//      } else {
+//        var lastuser = req.body.reduce(function(pre,cur){
+//          model.AttendanceModel.create({
+//            google_id: pre.google_id,
+//            date: pre.date,
+//            attendance: pre.attendance,
+//            timestamp: pre.timestamp
+//          }, function (err, save_result) {
+//            if (!err) {
+//
+//            }
+//          });
+//          return cur;
+//        });
+//        model.AttendanceModel.create({
+//          google_id: lastuser.google_id,
+//          date: lastuser.date,
+//          attendance: lastuser.attendance,
+//          timestamp: lastuser.timestamp
+//        }, function (err, save_result) {
+//          if (!err) {
+//            res.status(201).json({message:'success'});
+//          }
+//        });
+//      }
+//
+//    } else {
+//      console.log(err);
+//      res.status(500).json(err);
+//    }
+//  })
+//});
 
 router.put('/attendance',function(req,res){
   console.log(req.body);
   req.body.forEach(function(ele){
     model.AttendanceModel.find({google_id:ele.google_id,date:ele.date},function(err,result){
-      console.log("result",result);
+      //console.log("result",result);
       if(!err) {
         if(result.length != 0){
-          console.log("updating=================");
+          //console.log("updating=================");
           model.AttendanceModel.update({google_id:ele.google_id,date:ele.date},{attendance:ele.attendance},function(err,update_result){
-            console.log(update_result);
+           // console.log(update_result);
             if(!err){
-              res.status(200).json({message:'success'});
             }
           });
         }else{
-          //console.log({google_id:ele.google_id,date:ele.date,attendance:ele.attendance, timestamp:ele.timestamp});
           model.AttendanceModel.create({google_id:ele.google_id,date:ele.date,attendance:ele.attendance, timestamp:ele.timestamp},function(err,save_result){
-            console.log(save_result);
+            //console.log(save_result);
             if(!err){
-              res.status(201).json({message:'success'});
             }
           });
         }
       }else{
-        console.log(err);
+        //console.log(err);
         res.status(500).json(err);
       }
     })
   });
+  res.status(201).json({message:'success'});
 });
 module.exports = router;

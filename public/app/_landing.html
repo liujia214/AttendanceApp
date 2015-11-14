@@ -1,10 +1,11 @@
 <div flex></div>
-<div  flex="60">
-    <md-content layout="row" layout-wrap>
-        <header flex="100" class="md-display-1 md-margin" style="text-align: center">Hello {{user.name.first}}</header>
-        <md-button ng-if="!user" ng-href="{{googleUrl}}" class="md-raised md-primary" flex="">Login with Google</md-button>
+<div  flex="70" ng-cloak>
+    <md-content layout="row" layout-wrap >
+        <header flex="100" class="md-display-1" style="text-align: center;margin-bottom: 10px;">Hello {{user.name.first}}</header><br>
+        <md-button ng-show="!user" ng-href="{{googleUrl}}" class="md-raised md-primary" flex="">Login with Google</md-button>
         <md-button ng-show="user" class="md-primary md-raised" ui-sref="landing.profile" flex="">Profile</md-button>
-        <md-button ng-if="user.type === 'admin'" class="md-accent md-raised" ui-sref="landing.admin" flex="">Admin</md-button>
+        <md-button ng-if="user.type === 'staff'" class="md-accent md-raised" ui-sref="landing.admin" flex="">Admin</md-button>
+        <md-button ng-if="user.type === 'staff'" class="md-accent md-raised" ui-sref="landing.attendance" flex="">Attendance</md-button>
     </md-content>
     <md-content>
         <div ui-view></div>

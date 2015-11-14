@@ -1,0 +1,15 @@
+<section ng-cloak ng-show="user.type === 'staff'">
+    <md-content layout-padding  style="border: 1px solid #cccccc;">
+        <md-list>
+            <md-list-item ng-repeat="attendance in result">
+                <div>
+                    {{ attendance.date }}
+                </div>
+                <div class="md-secondary">
+                    {{attendance.attendance}}
+                </div>
+                <md-divider ng-if="!$last" ></md-divider>
+            </md-list-item>
+        </md-list>
+    </md-content>
+</section>

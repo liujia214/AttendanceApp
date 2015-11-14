@@ -36,25 +36,8 @@ passport.use(new GoogleStrategy({
                 refreshToken: refreshToken
             };
         }
-
-
-
-        /*(new models.GoogleUserModel({
-         email: profile.emails[0].value,
-         userid: profile.id,
-         profile: profile
-         })).save(function (err, result) {
-         if (err) console.error('Error: Could not save the user: ', profile.id);
-         else console.log('Successfully saved profile for the user: ', profile.id);
-         });
-         */
-        // issue: NO access to the gmail id
-
-
-
         // asynchronous verification, for effect...
         process.nextTick(function () {
-
             // To keep the example simple, the user's Google profile is returned to
             // represent the logged-in user.  In a typical application, you would want
             // to associate the Google account with a user record in your database,
@@ -86,6 +69,7 @@ module.exports = function (app) {
             // function will not be called.
         });
 
+    var acl = ['jatholeny@gmail.com', 'tech@golivelabs.io'];
     app.get('/auth/google/callback',
         passport.authenticate('google', { failureRedirect: '/login' }),
         function(req, res) {
@@ -98,7 +82,7 @@ module.exports = function (app) {
                     console.log(err);
                 }else{
                     if(!result){
-                        if(req.user.emails[0].value === 'jatholeny@gmail.com' || req.user.emails[0].value ==='amyjialiu2015@gmail.com'){
+                        if(acl.indexOf(req.user.emails[0].value) !== -1){
                             new model.ContactModel({
                                 google_id:req.user.id,
                                 name:{
@@ -125,7 +109,7 @@ module.exports = function (app) {
                                 },
                                 email:req.user.emails[0].value,
                                 photo:req.user.photos[0].value,
-                                type:'stuff'
+                                type:'staff'
                             }).save(function(err,result){
                                     if(err){
                                         console.log(err);
