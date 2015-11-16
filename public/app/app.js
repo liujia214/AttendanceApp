@@ -7,7 +7,7 @@ app.config(function ($stateProvider, $urlRouterProvider) {
     $stateProvider.state('landing', {
         url: '/landing',
         controller: 'LandingController',
-        templateUrl: 'app/_landing.html',
+        templateUrl: 'app/_landing.html'
     }).state('landing.profile', {
         url: '^/profile',
         controller: 'ProfileController',
@@ -33,11 +33,9 @@ app.controller("LandingController", function($scope, $http, $rootScope){
             $rootScope.user = config.data;
         });
     }
-
 });
 
-
-app.controller('ProfileController',function ($scope, $http,$state, $rootScope) {
+app.controller('ProfileController',function ($scope, $http,$state, ErrorDialog) {
     $http.get("/validate").then(function(config){
         console.log(config.data);
         $scope.user = config.data;
@@ -48,20 +46,22 @@ app.controller('ProfileController',function ($scope, $http,$state, $rootScope) {
     //    console.log("hello",data);
     //    $scope.user = data;
     //});
-    $scope.save = function () {
+    $scope.save = function ($event) {
         // saves the user to the database
         console.log($scope.user._id);
         $http.put('/contact/'+$scope.user._id, $scope.user).then(function (data) {
             console.log(data.data);
             $scope.message = data.data.message;
         }, function (config) {
-            console.log(config)
+            console.log('error');
+            $scope.message = 'connection error';
+            //ErrorDialog.showDialog($event);
         });
     };
 
 });
 
-app.controller('AdminController', function($http,$scope,$state, $rootScope){
+app.controller('AdminController', function($http,$scope,$state, ErrorDialog){
     $http.get("/validate").then(function(config){
         console.log(config.data);
         $scope.user = config.data;
@@ -99,12 +99,15 @@ app.controller('AdminController', function($http,$scope,$state, $rootScope){
                 $scope.userlist.forEach(function (ele_contact) {
                     ele_contact.attendance = false;
                     console.log(ele_contact);
-                })
+                });
+                ErrorDialog.showDialog();
             });
     };
     $http.get('/contacts').then(function(result){
         $scope.userlist = result.data;
         $scope.pickdate();
+    },function(){
+        ErrorDialog.showDialog();
     });
 
     $scope.save = function(userlist){
@@ -120,6 +123,7 @@ app.controller('AdminController', function($http,$scope,$state, $rootScope){
             $scope.message = result.data.message;
         },function(){
             $scope.message = 'connection error!';
+            ErrorDialog.showDialog();
         })
     };
 
@@ -133,21 +137,45 @@ app.controller('AdminController', function($http,$scope,$state, $rootScope){
     //}
 });
 
-app.controller('AttendanceController',function($scope,$http,$state){
+app.controller('AttendanceController',function($scope,$http,$state,ErrorDialog){
     $http.get("/validate").then(function(config){
-        console.log(config.data);
         $scope.user = config.data;
-        console.log($scope.user._id);
         $http.get('/attendance/'+$scope.user.google_id).then(function(result){
             $scope.result = result.data;
+            console.log(result.data);
             $scope.result.forEach(function(ele){
                 ele.date = new Date(ele.date).toISOString().substr(0,10);
-                ele.attendance = (ele.attendance === true) ? 'Present' : 'Absent';
             });
+        },function(err){
         })
     },function(){
         $state.go('landing');
     });
+    $scope.saveComment = function(attendance){
+        console.log('aa');
+        $http.put('/attendance/'+ attendance._id,attendance).then(function(result){
+            console.log(result.data);
+        },function(err){
+            console.log(err);
+            ErrorDialog.showDialog();
+        });
+    }
 
+});
+
+app.factory('ErrorDialog',function($mdDialog){
+    return{
+        showDialog:function($event){
+            $mdDialog.show(
+                $mdDialog.alert()
+                    .parent(document)
+                    .clickOutsideToClose(true)
+                    .title('Error')
+                    .textContent('Please check your connection!')
+                    .ok('Got it')
+                    .targetEvent($event)
+            );
+        }
+    }
 });
 

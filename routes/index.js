@@ -46,6 +46,7 @@ router.get('/contacts',function(req,res){
 
 // update user's profile
 router.put('/contact/:id', function (req, res) {
+  console.log(req.body);
   model.ContactModel.findByIdAndUpdate(req.params.id,req.body,function(err,result){
     if(!err){
       res.status(200).json({message:'success'});
@@ -59,7 +60,7 @@ router.get('/admin/:date',function(req,res){
   console.log(date);
   model.AttendanceModel.find({date:date}, function(err,result){
     if(!err){
-      //console.log(result);
+      console.log(result);
       res.status(200).json(result);
     }
   });
@@ -68,7 +69,7 @@ router.get('/admin/:date',function(req,res){
 
 router.get('/attendance/:id',function(req,res){
 
-  model.AttendanceModel.find({google_id:req.params.id}).sort('-date').select('date attendance').exec(function(err,result){
+  model.AttendanceModel.find({google_id:req.params.id}).sort('-date').exec(function(err,result){
     if(!err){
       //console.log(result);
       res.status(200).json(result);
@@ -76,6 +77,19 @@ router.get('/attendance/:id',function(req,res){
       //console.log(err);
     }
   });
+});
+
+router.put('/attendance/:id',function(req,res){
+  console.log(req.body);
+  model.AttendanceModel.findByIdAndUpdate(req.params.id,req.body,function(err,result){
+    if(!err){
+      console.log(result);
+      res.status(200).json({message:'success'});
+    }else{
+      console.log(err);
+      res.status(500).json({message:'server error'});
+    }
+  })
 });
 
 //router.put('/attendance',function(req,res) {

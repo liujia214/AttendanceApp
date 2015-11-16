@@ -28,6 +28,7 @@ var AttendanceModel = mongoose.model("attendance", new mongoose.Schema({
     },
     date:{ type: Date },
     attendance:{ type: Boolean, default: false },
+    comment:{type:String},
     timestamp:{ type: Date, default: Date.now }
 }));
 
