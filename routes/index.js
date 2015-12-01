@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var model = require("../model/model");
-
+var request = require('../modules/TimerReminder');
 
 router.use(function(req,res,next){
   if(req.user){
@@ -36,16 +36,8 @@ router.get('/contacts',function(req,res){
   })
 });
 
-//router.get('/contacts/:id',function(req,res){
-//  model.ContactModel.find({google_id:req.params.id},function(err,result){
-//    if(!err){
-//      res.status(200).json(result);
-//    }
-//  })
-//});
-
 // update user's profile
-router.put('/contact/:id', function (req, res) {
+router.put('/contacts/:id', function (req, res) {
   console.log(req.body);
   model.ContactModel.findByIdAndUpdate(req.params.id,req.body,function(err,result){
     if(!err){
@@ -66,6 +58,18 @@ router.get('/admin/:date',function(req,res){
   });
 });
 
+
+router.put('/admin',function(req,res){
+  console.log(req.body);
+  if(Array.isArray(req.body)){
+    req.body.forEach(function(ele){
+      saveAttendance(ele,res);
+    });
+  }else{
+    saveAttendance(req.body,res);
+  }
+  res.status(201).json({message:'success'});
+});
 
 router.get('/attendance/:id',function(req,res){
 
@@ -91,6 +95,46 @@ router.put('/attendance/:id',function(req,res){
     }
   })
 });
+
+router.post('/log',function(req,res){
+  if(Array.isArray(req.body)){
+    req.body.forEach(function(ele){
+      model.LogModel.create({google_id:ele.google_id,changer_id:ele.google_id,date:ele.date,attendance:ele.attendance},function(err,result){
+
+      })
+    })
+  }else{
+    model.LogModel.create({google_id:req.body.google_id,changer_id:req.body.google_id,date:req.body.date,attendance:req.body.attendance},function(err,result){
+      if(!err){
+        res.status(201).json({message:'success!'});
+      }else{
+        res.send(500);
+      }
+    });
+  }
+});
+
+function saveAttendance(body,res){
+  model.AttendanceModel.find({google_id:body.google_id,date:body.date},function(err,result){
+    if(!err) {
+      if(result.length != 0){
+        model.AttendanceModel.update({google_id:body.google_id,date:body.date},{attendance:body.attendance},function(err,update_result){
+          if(!err){
+          }
+        });
+      }else{
+        model.AttendanceModel.create({google_id:body.google_id,date:body.date,attendance:body.attendance, timestamp:body.timestamp},function(err,save_result){
+          if(!err){
+          }
+        });
+      }
+    }else{
+      res.status(500).json(err);
+    }
+  })
+}
+
+module.exports = router;
 
 //router.put('/attendance',function(req,res) {
 //  console.log(req.body);
@@ -161,32 +205,3 @@ router.put('/attendance/:id',function(req,res){
 //  })
 //});
 
-router.put('/attendance',function(req,res){
-  console.log(req.body);
-  req.body.forEach(function(ele){
-    model.AttendanceModel.find({google_id:ele.google_id,date:ele.date},function(err,result){
-      //console.log("result",result);
-      if(!err) {
-        if(result.length != 0){
-          //console.log("updating=================");
-          model.AttendanceModel.update({google_id:ele.google_id,date:ele.date},{attendance:ele.attendance},function(err,update_result){
-           // console.log(update_result);
-            if(!err){
-            }
-          });
-        }else{
-          model.AttendanceModel.create({google_id:ele.google_id,date:ele.date,attendance:ele.attendance, timestamp:ele.timestamp},function(err,save_result){
-            //console.log(save_result);
-            if(!err){
-            }
-          });
-        }
-      }else{
-        //console.log(err);
-        res.status(500).json(err);
-      }
-    })
-  });
-  res.status(201).json({message:'success'});
-});
-module.exports = router;

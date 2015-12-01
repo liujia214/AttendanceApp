@@ -37,7 +37,7 @@ var AttendanceModel = mongoose.model("attendance", new mongoose.Schema({
 
 var LogModel = mongoose.model('log',new mongoose.Schema({
     google_id:String,
-    user_id:String,
+    changer_id:String,
     date:{type:Date},
     attendance:{type:Boolean},
     timestamp:{type:Date,default:Date.now()}
@@ -45,7 +45,6 @@ var LogModel = mongoose.model('log',new mongoose.Schema({
 
 var RequestModel = mongoose.model('request',new mongoose.Schema({
     receiver:String,
-    user_id:String,
     timestamp:{type:String,default:Date.now()}
 }));
 
