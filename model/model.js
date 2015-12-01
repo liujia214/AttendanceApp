@@ -49,7 +49,7 @@ var RequestModel = mongoose.model('request',new mongoose.Schema({
 }));
 
 var ReminderModel = mongoose.model('reminder',new mongoose.Schema({
-    type:String,
+    type:Date,
     Time:String,
     escalation:String,
     buffer:String

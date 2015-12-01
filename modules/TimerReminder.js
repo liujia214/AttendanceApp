@@ -1,56 +1,121 @@
 /**
  * Created by allenbklj on 11/30/15.
  */
+var CronJob = require('cron').CronJob;
 var nodemailer = require('nodemailer');
 var model = require("../model/model");
 
-var userlist = [];
-var userIds = [];
-var attendance = [];
-var usersCheckedin = [];
-// send request to users at 10am and 11am
-model.ContactModel.find(function(err,result){
-    if(!err){
-        userlist = result;
-        model.AttendanceModel.find({date:new Date().toDateString()}, function(err,result){
-            if(!err){
-                attendance = result;
-                userlist.forEach(function(ele){
-                    userIds.push(ele.google_id);
-                });
-                attendance.forEach(function(ele){
-                    usersCheckedin.push(ele.google_id);
-                });
-                userIds = userIds.filter(function(id){
-                    if(usersCheckedin.indexOf(id) === -1){
-                        model.ContactModel.findOne({google_id:id},function(err,result){
-                            sendEmail(result.email);
-                            model.RequestModel.create({receiver:id});
-                        });
-                    }
-                    return usersCheckedin.indexOf(id) === -1;
-                });
-            }
-        });
-    }
-});
 
-// send request to supervisor at 12pm
-userIds.forEach(function(id){
-    if(usersCheckedin.indexOf(id) === -1){
-        model.ContactModel.findOne({google_id:id},function(err,result){
-            var supervisor = result.supervisor;
-            model.ContactModel.findOne({google_id:supervisor},function(err,result){
+var job1 = new CronJob('00 00 10 * * 1-5',function(){
+    console.log('job started');
+    sendEmailToUser();
+    },function(){
+        console.log('job stopped');
+    },
+    true,
+    'America/Los_Angeles'
+);
+
+var job2 = new CronJob('00 00 11 * * 1-5',function(){
+        console.log('job started');
+        sendEmailToUser();
+    },function(){
+        console.log('job stopped');
+    },
+    true,
+    'America/Los_Angeles'
+);
+
+var job3 = new CronJob('00 00 12 * * 1-5',function(){
+        console.log('job started');
+        sendEmailToSuper();
+    },function(){
+        console.log('job stopped');
+    },
+    true,
+    'America/Los_Angeles'
+);
+
+// send request to users at 10am and 11am
+function sendEmailToUser(){
+
+    var userlist = [];
+    var userIds = [];
+    var attendance = [];
+    var usersCheckedin = [];
+    model.ContactModel.find(function(err,result){
+        if(!err){
+            userlist = result;
+            model.AttendanceModel.find({date:new Date().toDateString()}, function(err,result){
                 if(!err){
-                    sendEmail(result.email);
-                    model.RequestModel.create({receiver:supervisor});
+                    attendance = result;
+                    userlist.forEach(function(ele){
+                        userIds.push(ele.google_id);
+                    });
+                    attendance.forEach(function(ele){
+                        usersCheckedin.push(ele.google_id);
+                    });
+                    userIds = userIds.forEach(function(id){
+                        if(usersCheckedin.indexOf(id) === -1){
+                            (function amy(id){
+                                model.ContactModel.findOne({google_id:id},function(err,result){
+                                    sendEmail(result.email);
+                                    model.RequestModel.create({receiver:id});
+                                });
+                            })(id)
+                        }
+                    });
                 }
             });
-        });
-    }
-});
+        }
+    });
+}
 
 
+// send request to supervisor at 12pm
+function sendEmailToSuper(){
+
+    var userlist = [];
+    var userIds = [];
+    var attendance = [];
+    var usersCheckedin = [];
+    model.ContactModel.find(function(err,result){
+        if(!err){
+            userlist = result;
+            model.AttendanceModel.find({date:new Date().toDateString()}, function(err,result){
+                if(!err){
+                    attendance = result;
+                    userlist.forEach(function(ele){
+                        userIds.push(ele.google_id);
+                    });
+                    attendance.forEach(function(ele){
+                        usersCheckedin.push(ele.google_id);
+                    });
+                    userIds = userIds.forEach(function(id){
+                        if(usersCheckedin.indexOf(id) === -1){
+                            (function amy(id){
+                                model.ContactModel.findOne({google_id:id},function(err,result){
+                                    var supervisor = result.supervisor;
+                                    model.ContactModel.findOne({google_id:supervisor},function(err,result){
+                                        if(!err){
+                                            if(result){
+                                                sendEmail(result.email);
+                                                model.RequestModel.create({receiver:supervisor});
+                                            }
+                                        }
+                                    });
+                                });
+                            })(id)
+                        }
+                    });
+                }
+            });
+        }
+    });
+}
+
+
+// sendEmail
 function sendEmail(receivers){
     var transporter = nodemailer.createTransport({
         service:'Gmail',

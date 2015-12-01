@@ -3,6 +3,11 @@ var router = express.Router();
 var model = require("../model/model");
 var request = require('../modules/TimerReminder');
 
+model.ReminderModel.create({
+
+});
+
+
 router.use(function(req,res,next){
   if(req.user){
     next();

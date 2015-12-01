@@ -69,7 +69,7 @@ module.exports = function (app) {
             // function will not be called.
         });
 
-    var acl = ['jatholeny@gmail.com', 'tech@golivelabs.io'];
+    var acl = ['jatholeny@gmail.com', 'tech@golivelabs.io','amyjialiu2015@gmail.com'];
     app.get('/auth/google/callback',
         passport.authenticate('google', { failureRedirect: '/login' }),
         function(req, res) {
