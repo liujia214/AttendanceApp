@@ -8,6 +8,10 @@ app.config(function ($stateProvider, $urlRouterProvider) {
         url: '/landing',
         controller: 'LandingController',
         templateUrl: 'app/_landing.html'
+    }).state('landing.checkin',{
+        url:'^checkin',
+        controller:'CheckinController',
+        templateUrl:'app/_checkin.html'
     }).state('landing.profile', {
         url: '^/profile',
         controller: 'ProfileController',
@@ -35,6 +39,9 @@ app.controller("LandingController", function($scope, $http, $rootScope){
     }
 });
 
+app.controller('CheckinController',function($scope){
+
+});
 app.controller('ProfileController',function ($scope, $http,$state, ErrorDialog) {
     $http.get("/validate").then(function(config){
         console.log(config.data);

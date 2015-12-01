@@ -14,7 +14,9 @@ var ContactModel = mongoose.model("googleUser", new mongoose.Schema({
     },
     email: String,
     photo:String,
-    type:String,
+    type:String, //supervisor,staff,student
+    supervisor:String,
+    status:String,
     address:{
         github:String,
         linkedin:String
@@ -26,13 +28,38 @@ var AttendanceModel = mongoose.model("attendance", new mongoose.Schema({
     google_id: {
         type: String
     },
+    user_id:String,
     date:{ type: Date },
     attendance:{ type: Boolean, default: false },
     comment:{type:String},
-    timestamp:{ type: Date, default: Date.now }
+    timestamp:{ type: Date, default: Date.now() }
+}));
+
+var LogModel = mongoose.model('log',new mongoose.Schema({
+    google_id:String,
+    user_id:String,
+    date:{type:Date},
+    attendance:{type:Boolean},
+    timestamp:{type:Date,default:Date.now()}
+}));
+
+var RequestModel = mongoose.model('request',new mongoose.Schema({
+    receiver:String,
+    user_id:String,
+    timestamp:{type:String,default:Date.now()}
+}));
+
+var ReminderModel = mongoose.model('reminder',new mongoose.Schema({
+    type:String,
+    Time:String,
+    escalation:String,
+    buffer:String
 }));
 
 module.exports = {
     ContactModel: ContactModel,
-    AttendanceModel:AttendanceModel
+    AttendanceModel:AttendanceModel,
+    LogModel:LogModel,
+    RequestModel:RequestModel,
+    ReminderModel:ReminderModel
 };
