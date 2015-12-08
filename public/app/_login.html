@@ -1,0 +1,8 @@
+<md-dialog style="position: absolute;top:50px;right: 0px">
+    <md-dialog-content layout = 'column'>
+        <input type="email" placeholder="Email" ng-model="user.email" class="user">
+        <input type="password" placeholder="Password" ng-model="password" class="user">
+        <md-button class="md-primary md-raised" flex>Log In</md-button>
+        <md-button class="md-raised md-accent" flex ng-href="{{googleUrl}}">Login with Google</md-button>
+    </md-dialog-content>
+</md-dialog>

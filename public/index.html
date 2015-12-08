@@ -19,9 +19,30 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-material/0.11.2/angular-material.min.js"></script>
     <script src="app/app.js"></script>
 </head>
-<body>
-    <md-toolbar>
-        <div class="md-toolbar-tools">Attendance App</div>
+<body ng-controller="MainController">
+    <md-toolbar layout="row">
+        <h2 class="md-toolbar-tools">Attendance App</h2>
+        <md-button ng-show="!user" style="font-size: 12px;text-decoration: underline;" ng-click="login()">Login in</md-button>
+        <md-menu-bar ng-show="user">
+            <md-menu>
+                <img ng-src="{{user.photo}}" class="md-avatar" ng-click="$mdOpenMenu()" style="position: relative;top: 10px;">
+                <md-menu-content>
+                    <md-menu-item class="profileItem">{{user.name.first}} {{user.name.last}}</md-menu-item>
+                    <md-menu-item class="profileItem">{{user.email}}</md-menu-item>
+                    <md-menu-item class="profileItem">Github: {{user.address.github}}</md-menu-item>
+                    <md-menu-item class="profileItem">LinkedIn: {{user.address.linkedin}}</md-menu-item>
+                    <md-divider></md-divider>
+                    <md-menu-item>
+                        <md-button style="color:rgba(0,0,0,0.870588);" ng-click="editProfile($event)">Edit</md-button>
+                    </md-menu-item>
+                    <md-menu-item>
+                        <md-button style="color:rgba(0,0,0,0.870588);" ng-click="logout()">Log Out</md-button>
+                    </md-menu-item>
+                </md-menu-content>
+            </md-menu>
+        </md-menu-bar>
+        <md-button ng-show='user' class="md-raised md-accent"
+                   ng-class="{green:present}" ng-disabled="present" ng-click="check(true);status = 'Present';present=true">{{status}}</md-button>
     </md-toolbar>
     <md-content ui-view class="md-padding" layout="row">
 

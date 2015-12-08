@@ -18,7 +18,7 @@ router.use(function(req,res,next){
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Express' });
+  res.render('index', { user:req.user });
 });
 
 // validate user before any behavior
@@ -76,6 +76,18 @@ router.put('/admin',function(req,res){
   res.status(201).json({message:'success'});
 });
 
+router.get('/attendance',function(req,res){
+  console.log(req.query);
+  model.AttendanceModel.findOne({google_id:decodeURIComponent(req.query.id),date:decodeURIComponent(req.query.date)},function(err,result){
+    if(!err){
+      console.log(result);
+      res.status(200).json(result);
+    }else{
+      console.log(err);
+    }
+  })
+});
+
 router.get('/attendance/:id',function(req,res){
 
   model.AttendanceModel.find({google_id:req.params.id}).sort('-date').exec(function(err,result){
@@ -119,7 +131,14 @@ router.post('/log',function(req,res){
   }
 });
 
+//router.get('/logout',function(req,res){
+//  req.logout();
+//  console.log(req.user);
+//  res.redirect('/');
+//});
+
 function saveAttendance(body,res){
+  console.log(body);
   model.AttendanceModel.find({google_id:body.google_id,date:body.date},function(err,result){
     if(!err) {
       if(result.length != 0){

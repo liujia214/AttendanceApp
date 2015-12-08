@@ -122,6 +122,7 @@ module.exports = function (app) {
 
                         }
                     }else{
+                        console.log('=======');
                         res.redirect('/');
                     }
 
@@ -134,8 +135,7 @@ module.exports = function (app) {
 
     app.get('/logout', function(req, res){
         req.logout();
+        console.log('==='+req.user);
         res.redirect('/');
     });
-
-
 };
